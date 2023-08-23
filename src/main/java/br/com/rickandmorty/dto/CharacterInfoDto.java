@@ -2,11 +2,13 @@ package br.com.rickandmorty.dto;
 
 import br.com.rickandmorty.client.model.character.Location;
 import br.com.rickandmorty.client.model.character.Origin;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
+@Builder
 @Getter
 @Setter
 public class CharacterInfoDto {

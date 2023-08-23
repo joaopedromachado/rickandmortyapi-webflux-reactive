@@ -5,6 +5,7 @@ import br.com.rickandmorty.client.model.location.LocationInfo;
 import br.com.rickandmorty.dto.CharacterInfoDto;
 import br.com.rickandmorty.dto.EpisodeInfoDto;
 import br.com.rickandmorty.dto.LocationInfoDto;
+import br.com.rickandmorty.mapper.CharacterInfoMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class RickAndMortyApiService {
     public Mono<CharacterInfoDto> getCharacterById(final int id) {
         return this.rickAndMortyApiClient.getCharacterById(id)
                 .doOnNext(characterInfo -> log.info("Processando dados do personagem {}", characterInfo.getName()))
-                .map(characterInfo -> this.objectMapper.convertValue(characterInfo, CharacterInfoDto.class))
+                .map(CharacterInfoMapper::of)
                 .doOnSuccess(characterInfoDto -> log.info("[ID - {}]", characterInfoDto.getId()));
     }
 
