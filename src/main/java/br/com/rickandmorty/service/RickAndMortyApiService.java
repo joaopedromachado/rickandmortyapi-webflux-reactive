@@ -6,6 +6,8 @@ import br.com.rickandmorty.dto.CharacterInfoDto;
 import br.com.rickandmorty.dto.EpisodeInfoDto;
 import br.com.rickandmorty.dto.LocationInfoDto;
 import br.com.rickandmorty.mapper.CharacterInfoMapper;
+import br.com.rickandmorty.mapper.EpisodeInfoMapper;
+import br.com.rickandmorty.mapper.LocationInfoMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,27 +23,27 @@ import java.util.List;
 public class RickAndMortyApiService {
 
     private final RickAndMortyApiClient rickAndMortyApiClient;
-    private final ObjectMapper objectMapper;
 
     public Mono<CharacterInfoDto> getCharacterById(final int id) {
         return this.rickAndMortyApiClient.getCharacterById(id)
                 .doOnNext(characterInfo -> log.info("Processando dados do personagem {}", characterInfo.getName()))
                 .map(CharacterInfoMapper::of)
-                .doOnSuccess(characterInfoDto -> log.info("[ID - {}]", characterInfoDto.getId()));
+                .doOnSuccess(characterInfoDto -> log.info("[ID - {}]", characterInfoDto.getId()))
+                .doOnError(throwable -> log.error("Erro ao encontrar personagem {}", throwable.getMessage()));
     }
 
     public Flux<CharacterInfoDto> getMultipleCharactersById(final List<Integer> ids) {
         return this.rickAndMortyApiClient.getMultipleCharactersById(ids)
-                .map(characterInfo -> this.objectMapper.convertValue(characterInfo, CharacterInfoDto.class));
+                .map(CharacterInfoMapper::of);
     }
 
     public Mono<LocationInfoDto> getLocationById(final int id) {
         return this.rickAndMortyApiClient.getLocationById(id)
-                .map(locationInfo -> this.objectMapper.convertValue(locationInfo, LocationInfoDto.class));
+                .map(LocationInfoMapper::of);
     }
 
     public Mono<EpisodeInfoDto> getEpisodeById(final int id) {
         return this.rickAndMortyApiClient.getEpisodeById(id)
-                .map(episodeInfo -> this.objectMapper.convertValue(episodeInfo, EpisodeInfoDto.class));
+                .map(EpisodeInfoMapper::of);
     }
 }
